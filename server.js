@@ -6,6 +6,14 @@ const app = express()
 // Connect Database
 connectDB()
 
+// Init Middleware
+// by doing this we can now accept data, and don't need body parser
+app.use(
+  express.json({
+    extended: false
+  })
+)
+
 app.get('/', (req, res) =>
   res.json({ msg: 'Welcome to the contact keeper API...' })
 )
