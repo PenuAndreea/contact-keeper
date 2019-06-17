@@ -4,6 +4,7 @@ const router = express.Router()
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const config = require('config')
+const auth = require('../middleware/auth')
 const { check, validationResult } = require('express-validator/check')
 
 const User = require('../models/User')
@@ -11,8 +12,16 @@ const User = require('../models/User')
 // @route       GET api/auth
 // @desc        Get logged in user
 // @access      Private
-router.get('/', (req, res) => {
-  res.send('Get logged in user')
+// every time we need to protect a route we need to bring in the middleware
+router.get('/', auth, async (req, res) => {
+  try {
+    // get the user from the database
+    const user = await User.findById(req.user.id).select('-password') // not return the password
+    res.json(user)
+  } catch (err) {
+    console.error(err.message)
+    res.status(500).json({ msg: 'Server Error' })
+  }
 })
 
 // @route       POST api/auth
